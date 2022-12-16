@@ -1,6 +1,5 @@
 import cv2
 import pyautogui as pg
-from math import hypot
 from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
@@ -10,6 +9,8 @@ import numpy as np
 
 START_DIST = 0.05
 STOP_DELAY = 1
+TEXT_MOVED = 10
+COLOR = (57, 237, 111)
 
 last_active = 0
 activated = False
@@ -29,36 +30,29 @@ def volume(fingers, frame):
 
     if time.time() - last_active >= STOP_DELAY:
         activated = False
-    # try:
     if dist(fingers[4], fingers[8]) <= START_DIST:
         activated = True
     if not activated:
         return
 
-    cv2.circle(
+    x4, y4 = int(fingers[4].x * frame.shape[1]), int(fingers[4].y * frame.shape[0])
+    x8, y8 = int(fingers[8].x * frame.shape[1]), int(fingers[8].y * frame.shape[0])
+
+    cv2.circle(frame, (x4, y4), 10, COLOR, -1, 0)
+    cv2.circle(frame, (x8, y8), 10, COLOR, -1, 0)
+    cv2.line(frame, (x4, y4), (x8, y8), COLOR, 5)
+
+    vol1 = np.interp(dist(fingers[4], fingers[8]), [0, 0.35], [vol_min, vol_max])
+    vol2 = np.interp(dist(fingers[4], fingers[8]), [0, 0.35], [0, 100])
+    volume_cast.SetMasterVolumeLevel(vol1, None)
+    cv2.putText(
         frame,
-        (int(fingers[4].x * frame.shape[1]), int(fingers[4].y * frame.shape[0])),
-        10,
-        (255, 0, 0),
-        -1,
+        f"{round(vol2)}%",
+        ((x4 + x8) // 2 + TEXT_MOVED, (y4 + y8) // 2),
+        cv2.FONT_HERSHEY_COMPLEX,
+        1,
+        COLOR,
+        2,
     )
-    cv2.circle(
-        frame,
-        (int(fingers[8].x * frame.shape[1]), int(fingers[8].y * frame.shape[0])),
-        10,
-        (255, 0, 0),
-        -1,
-    )
-    cv2.line(
-        frame,
-        (int(fingers[4].x * frame.shape[1]), int(fingers[4].y * frame.shape[0])),
-        (int(fingers[8].x * frame.shape[1]), int(fingers[8].y * frame.shape[0])),
-        (255, 0, 0),
-        5,
-    )
-    print(dist(fingers[4], fingers[8]))
-    vol = np.interp(dist(fingers[4], fingers[8]), [0, 0.35], [vol_min, vol_max])
-    volume_cast.SetMasterVolumeLevel(vol, None)
+
     last_active = time.time()
-    # except:
-    #     pass

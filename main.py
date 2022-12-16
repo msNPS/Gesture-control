@@ -18,7 +18,9 @@ def camera_loop():
         if results.multi_hand_landmarks is not None:
             for hand in range(len(results.multi_handedness)):
                 mp.solutions.drawing_utils.draw_landmarks(
-                    frame, results.multi_hand_landmarks[hand], mp.solutions.hands.HAND_CONNECTIONS
+                    frame,
+                    results.multi_hand_landmarks[hand],
+                    mp.solutions.hands.HAND_CONNECTIONS,
                 )
                 fingers = results.multi_hand_landmarks[hand].landmark
                 if "Right" in str(results.multi_handedness[hand]):
