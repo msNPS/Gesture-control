@@ -9,6 +9,7 @@ CLICK_DIST = 0.05
 DESKTOP_DIST = 0.1
 SWITCH_DIST = 0.35
 PAUSE_DIST = 0.04
+LOCK_DIST = 0.06
 DELAY = 1
 
 last_gesture = 0
@@ -47,12 +48,18 @@ def mouse(fingers):
 def lock(fingers):
     global last_gesture
     try:
+        print(
+            dist(fingers[0], fingers[5]) - dist(fingers[0], fingers[8]),
+            dist(fingers[0], fingers[9]) - dist(fingers[0], fingers[12]),
+            dist(fingers[0], fingers[13]) - dist(fingers[0], fingers[16]),
+            dist(fingers[0], fingers[17]) - dist(fingers[0], fingers[20]),
+        )
         if (
             fingers[5].x > fingers[17].x
-            and dist(fingers[0], fingers[8]) < dist(fingers[0], fingers[5])
-            and dist(fingers[0], fingers[12]) < dist(fingers[0], fingers[9])
-            and dist(fingers[0], fingers[16]) < dist(fingers[0], fingers[13])
-            and dist(fingers[0], fingers[20]) < dist(fingers[0], fingers[17])
+            and dist(fingers[0], fingers[5]) - dist(fingers[0], fingers[8]) >= LOCK_DIST
+            and dist(fingers[0], fingers[9]) - dist(fingers[0], fingers[12]) >= LOCK_DIST
+            and dist(fingers[0], fingers[13]) - dist(fingers[0], fingers[16]) >= LOCK_DIST
+            and dist(fingers[0], fingers[17]) - dist(fingers[0], fingers[20]) >= LOCK_DIST
         ):
             ctypes.windll.user32.LockWorkStation()
     except:
