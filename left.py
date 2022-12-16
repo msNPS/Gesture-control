@@ -7,28 +7,28 @@ import time
 import numpy as np
 
 
-START_DIST = 0.05
+START_DIST = 0.05  # Configurations
 STOP_DELAY = 1
 TEXT_MOVED = 10
 COLOR = (57, 237, 111)
 
-last_active = 0
+last_active = 0  # Temporary variables
 activated = False
 
-devices = AudioUtilities.GetSpeakers()
+devices = AudioUtilities.GetSpeakers()  # Volume control setup
 interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
 volume_cast = cast(interface, POINTER(IAudioEndpointVolume))
 vol_min, vol_max = volume_cast.GetVolumeRange()[:2]
 
 
-def dist(p1, p2):
+def dist(p1, p2):  # Distance between 2 points
     return ((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2) ** 0.5
 
 
-def volume(fingers, frame):
+def volume(fingers, frame):  # Volume control gesture
     global activated, last_active
 
-    if time.time() - last_active >= STOP_DELAY:
+    if time.time() - last_active >= STOP_DELAY:  # Activation check
         activated = False
     if dist(fingers[4], fingers[8]) <= START_DIST:
         activated = True
@@ -38,13 +38,13 @@ def volume(fingers, frame):
     x4, y4 = int(fingers[4].x * frame.shape[1]), int(fingers[4].y * frame.shape[0])
     x8, y8 = int(fingers[8].x * frame.shape[1]), int(fingers[8].y * frame.shape[0])
 
-    cv2.circle(frame, (x4, y4), 10, COLOR, -1, 0)
+    cv2.circle(frame, (x4, y4), 10, COLOR, -1, 0)  # Circles and line between fingers
     cv2.circle(frame, (x8, y8), 10, COLOR, -1, 0)
     cv2.line(frame, (x4, y4), (x8, y8), COLOR, 5)
 
-    vol1 = np.interp(dist(fingers[4], fingers[8]), [0, 0.35], [vol_min, vol_max])
+    vol1 = np.interp(dist(fingers[4], fingers[8]), [0, 0.35], [vol_min, vol_max])  # Get the volume
     vol2 = np.interp(dist(fingers[4], fingers[8]), [0, 0.35], [0, 100])
-    volume_cast.SetMasterVolumeLevel(vol1, None)
+    volume_cast.SetMasterVolumeLevel(vol1, None)  # Set the volume
     cv2.putText(
         frame,
         f"{round(vol2)}%",
@@ -53,6 +53,6 @@ def volume(fingers, frame):
         1,
         COLOR,
         2,
-    )
+    )  # Show text with volume percentage
 
     last_active = time.time()
