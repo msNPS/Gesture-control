@@ -1,6 +1,7 @@
 import pyautogui as pg
 import time
 import ctypes
+import win32api
 
 
 DISPLAY_SIZE = 0.7
@@ -11,6 +12,9 @@ PAUSE_DIST = 0.04
 DELAY = 1
 
 last_gesture = 0
+
+VK_MEDIA_PLAY_PAUSE = 0xB3
+hwcode = win32api.MapVirtualKey(VK_MEDIA_PLAY_PAUSE, 0)
 
 
 def dist(p1, p2):
@@ -86,8 +90,12 @@ def switch(fingers):
 def pause(fingers):
     global last_gesture
     try:
-        if dist(fingers[4], fingers[8]) <= PAUSE_DIST and dist(fingers[4], fingers[12]) <= PAUSE_DIST:
-            print("pause")
+        if (
+            dist(fingers[4], fingers[8]) <= PAUSE_DIST
+            and dist(fingers[4], fingers[12]) <= PAUSE_DIST
+            and time.time() - last_gesture >= DELAY
+        ):
+            win32api.keybd_event(VK_MEDIA_PLAY_PAUSE, hwcode)
             last_gesture = time.time()
     except:
         pass
