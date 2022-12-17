@@ -13,6 +13,7 @@ SWITCH_DIST = 0.33
 PAUSE_DIST = 0.04
 LOCK_DIST = 0.06
 FUN_DIST = 0.05
+FUN_DIST2 = 0.15
 DELAY = 1.5
 MOUSE_COLOR = (255, 157, 0)
 PAUSE_COLOR = (222, 40, 107)
@@ -132,6 +133,7 @@ def fun(fingers):
     try:  # Gesture check
         if (
             fingers[4].x < fingers[20].x
+            and dist(fingers[4], fingers[20]) >= fingers[4].x < fingers[20].x
             and fingers[12].x < fingers[8].x
             and dist(fingers[12], fingers[8]) <= FUN_DIST
             and time.time() - last_gesture >= DELAY
