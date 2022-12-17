@@ -5,11 +5,10 @@ import left
 
 
 def camera_loop():  # Main camera cycle
-    run = True
     vid = cv2.VideoCapture(0)
     handsDetector = mp.solutions.hands.Hands(max_num_hands=2)
 
-    while run:
+    while True:
         _, frame = vid.read()
         frame = cv2.flip(frame, 1)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -29,13 +28,14 @@ def camera_loop():  # Main camera cycle
                     right.desktop(fingers)
                     right.switch(fingers)
                     right.pause(fingers, frame)
+                    right.fun(fingers)
                 else:
                     left.volume(fingers, frame)  # Left hand
 
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Show the frame
         cv2.imshow("frame", frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):
-            run = False
+            break
 
     vid.release()  # Close the program
     cv2.destroyAllWindows()

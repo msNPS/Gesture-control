@@ -3,6 +3,7 @@ import pyautogui as pg
 import time
 import ctypes
 import win32api
+import webbrowser
 
 
 DISPLAY_SIZE = 0.7  # Configurations
@@ -11,7 +12,8 @@ DESKTOP_DIST = 0.1
 SWITCH_DIST = 0.33
 PAUSE_DIST = 0.04
 LOCK_DIST = 0.06
-DELAY = 1
+FUN_DIST = 0.05
+DELAY = 1.5
 MOUSE_COLOR = (255, 157, 0)
 PAUSE_COLOR = (222, 40, 107)
 
@@ -120,5 +122,19 @@ def pause(fingers, frame):  # Pause the media
                 PAUSE_COLOR,
                 8,
             )
+    except:
+        pass
+
+
+def fun(fingers):
+    global last_gesture
+    try:  # Gesture check
+        if (
+            fingers[4].x < fingers[20].x
+            and fingers[12].x < fingers[8].x
+            and time.time() - last_gesture >= DELAY
+        ):
+            webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+            last_gesture = time.time()
     except:
         pass
