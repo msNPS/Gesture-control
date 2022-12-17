@@ -34,6 +34,7 @@ def mouse(fingers, frame):  # Mouse control gesture
             dist(fingers[0], fingers[12]) < dist(fingers[0], fingers[9])
             and dist(fingers[0], fingers[16]) < dist(fingers[0], fingers[13])
             and dist(fingers[0], fingers[20]) < dist(fingers[0], fingers[17])
+            and dist(fingers[0], fingers[8]) > dist(fingers[0], fingers[5])
         ):  # Gesture check
             pg.moveTo(
                 max(fingers[8].x - (1 - DISPLAY_SIZE) / 2, 0) * pg.size()[0] / DISPLAY_SIZE,
@@ -132,6 +133,7 @@ def fun(fingers):
         if (
             fingers[4].x < fingers[20].x
             and fingers[12].x < fingers[8].x
+            and dist(fingers[12], fingers[8]) <= FUN_DIST
             and time.time() - last_gesture >= DELAY
         ):
             webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
