@@ -1,3 +1,4 @@
+import cv2
 import pyautogui as pg
 import time
 import ctypes
@@ -11,6 +12,8 @@ SWITCH_DIST = 0.33
 PAUSE_DIST = 0.04
 LOCK_DIST = 0.06
 DELAY = 1
+MOUSE_COLOR = (255, 157, 0)
+PAUSE_COLOR = (222, 40, 107)
 
 last_gesture = 0  # Temporary variable
 
@@ -22,7 +25,7 @@ def dist(p1, p2):  # Distance between 2 points
     return ((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2) ** 0.5
 
 
-def mouse(fingers):  # Mouse control gesture
+def mouse(fingers, frame):  # Mouse control gesture
     global last_gesture
     try:
         if (
@@ -38,9 +41,24 @@ def mouse(fingers):  # Mouse control gesture
                 logScreenshot=False,
                 _pause=False,
             )  # move mouse
-            if dist(fingers[4], fingers[10]) <= CLICK_DIST and time.time() - last_gesture >= DELAY:
-                pg.click()  # Click gesture
-                last_gesture = time.time()
+            cv2.circle(
+                frame,
+                (int(fingers[8].x * frame.shape[1]), int(fingers[8].y * frame.shape[0])),
+                15,
+                MOUSE_COLOR,
+                5,
+            )
+            if dist(fingers[4], fingers[10]) <= CLICK_DIST:
+                if time.time() - last_gesture >= DELAY:
+                    pg.click()  # Click gesture
+                    last_gesture = time.time()
+                cv2.circle(
+                    frame,
+                    (int(fingers[10].x * frame.shape[1]), int(fingers[10].y * frame.shape[0])),
+                    15,
+                    MOUSE_COLOR,
+                    -1,
+                )
     except:
         pass
 
@@ -88,15 +106,19 @@ def switch(fingers):  # Switch between windows gesture
         pass
 
 
-def pause(fingers):  # Pause the media
+def pause(fingers, frame):  # Pause the media
     global last_gesture
-    try:
-        if (
-            dist(fingers[4], fingers[8]) <= PAUSE_DIST
-            and dist(fingers[4], fingers[12]) <= PAUSE_DIST
-            and time.time() - last_gesture >= DELAY
-        ):  # Gesture check
-            win32api.keybd_event(VK_MEDIA_PLAY_PAUSE, hwcode)
-            last_gesture = time.time()
+    try:  # Gesture check
+        if dist(fingers[4], fingers[8]) <= PAUSE_DIST and dist(fingers[4], fingers[12]) <= PAUSE_DIST:
+            if time.time() - last_gesture >= DELAY:
+                win32api.keybd_event(VK_MEDIA_PLAY_PAUSE, hwcode)
+                last_gesture = time.time()
+            cv2.circle(
+                frame,
+                (int(fingers[4].x * frame.shape[1]), int(fingers[4].y * frame.shape[0])),
+                25,
+                PAUSE_COLOR,
+                8,
+            )
     except:
         pass

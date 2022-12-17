@@ -24,11 +24,11 @@ def camera_loop():  # Main camera cycle
                 )  # Draw hand connections
                 fingers = results.multi_hand_landmarks[hand].landmark
                 if "Right" in str(results.multi_handedness[hand]):
-                    right.mouse(fingers)  # Right hand
+                    right.mouse(fingers, frame)  # Right hand
                     right.lock(fingers)
                     right.desktop(fingers)
                     right.switch(fingers)
-                    right.pause(fingers)
+                    right.pause(fingers, frame)
                 else:
                     left.volume(fingers, frame)  # Left hand
 
